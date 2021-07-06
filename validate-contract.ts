@@ -2,6 +2,12 @@ import axios from 'axios'
 
 const apikey = 'your etherscan api key';
 
+enum Standard {
+  ERC721 = 'erc721',
+  ERC1155 = 'erc1155',
+  UNKNOWN = 'unknown'
+}
+
 // 721
 function checkTransferEvent(abi: any[]): boolean {
   let item = abi.find(item => item.name === 'Transfer' && item.type === 'event');
@@ -129,17 +135,17 @@ async function validateContract(contract: string) {
 
 async function run(contracts: string[]) {
 
-  
+
   for (const contract of contracts) {
     const res = await validateContract(contract);
 
     let standard: string;
     if (res.erc721.pass) {
-      standard = 'ERC721';
+      standard = Standard.ERC721;
     } else if (res.erc1155.pass) {
-      standard = 'ERC1155';
+      standard = Standard.ERC1155;
     } else {
-      standard = 'non-standard';
+      standard = Standard.UNKNOWN;
     }
 
     console.log(`contract: ${contract} standard: ${standard}`);
